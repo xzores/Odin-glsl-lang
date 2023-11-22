@@ -153,7 +153,7 @@ include_local_func :: #type proc "c" (ctx : rawptr, header_name : cstring, inclu
 include_system_func :: #type proc "c" (ctx : rawptr, header_name : cstring, includer_name : cstring, include_depth : size_t) -> ^include_result_t;
 
 /* Callback for include result destruction */
-free_include_result_func :: #type proc "c" (ctx : rawptr, result : ^include_result_t) -> int;
+free_include_result_func :: #type proc "c" (ctx : rawptr, result : ^include_result_t) -> glsl_int;
 
 /* Collection of callbacks for GLSL preprocessor */
 include_callbacks_t :: struct {
@@ -198,8 +198,8 @@ spv_options_t :: struct {
 ////////////////////////  c_shader_types.h ////////////////////////
 
 /* EShLanguage counterpart */
-stage_t :: enum { // would be better as stage, but this is ancient now
-    STAGE_VERTEX = 0,
+stage_t :: enum i32 { // would be better as stage, but this is ancient now
+    STAGE_VERTEX,
     STAGE_TESSCONTROL,
     STAGE_TESSEVALUATION,
     STAGE_GEOMETRY,
@@ -221,47 +221,42 @@ stage_t :: enum { // would be better as stage, but this is ancient now
     STAGE_TASK_NV = STAGE_TASK,
     STAGE_MESH,
     STAGE_MESH_NV = STAGE_MESH,
-	LAST,
 };
 
 /* EShLanguageMask counterpart */
 stage_mask_t :: bit_set[stage_t];
 
 /* EShSource counterpart */
-source_t :: enum {
+source_t :: enum i32 {
     SOURCE_NONE,
     SOURCE_GLSL,
     SOURCE_HLSL,
-    LAST,
 };
 
 /* EShClient counterpart */
-client_t :: enum {
+client_t :: enum i32 {
     CLIENT_NONE,
     CLIENT_VULKAN,
     CLIENT_OPENGL,
-    LAST,
 };
 
 /* EShTargetLanguage counterpart */
-target_language_t :: enum {
+target_language_t :: enum i32 {
     TARGET_NONE,
     TARGET_SPV,
-    last,
 };
 
 /* SH_TARGET_ClientVersion counterpart */
-target_client_version_t :: enum {
+target_client_version_t :: enum i32 {
     TARGET_VULKAN_1_0 = (1 << 22),
     TARGET_VULKAN_1_1 = (1 << 22) | (1 << 12),
     TARGET_VULKAN_1_2 = (1 << 22) | (2 << 12),
     TARGET_VULKAN_1_3 = (1 << 22) | (3 << 12),
     TARGET_OPENGL_450 = 450,
-    last,
 };
 
 /* SH_TARGET_LanguageVersion counterpart */
-target_language_version_t :: enum {
+target_language_version_t :: enum i32 {
     TARGET_SPV_1_0 = (1 << 16),				//0
     TARGET_SPV_1_1 = (1 << 16) | (1 << 8), 	//1
     TARGET_SPV_1_2 = (1 << 16) | (2 << 8), 	//2
@@ -269,11 +264,10 @@ target_language_version_t :: enum {
     TARGET_SPV_1_4 = (1 << 16) | (4 << 8), 	//4
     TARGET_SPV_1_5 = (1 << 16) | (5 << 8), 	//5
     TARGET_SPV_1_6 = (1 << 16) | (6 << 8), 	//6
-    TARGET_LANGUAGE_VERSION_COUNT = 7,
 };
 
 /* EShExecutable counterpart */
-executable_t :: enum { 
+executable_t :: enum i32 { 
 	EX_VERTEX_FRAGMENT,
 	EX_FRAGMENT,
 };
@@ -281,23 +275,21 @@ executable_t :: enum {
 // EShOptimizationLevel counterpart
 // This enum is not used in the current C interface, but could be added at a later date.
 // OPT_NONE is the current default.
-optimization_level_t :: enum {
+optimization_level_t :: enum i32 {
     OPT_NO_GENERATION,
     OPT_NONE,
     OPT_SIMPLE,
     OPT_FULL,
-    last,
 };
 
 /* EShTextureSamplerTransformMode counterpart */
-texture_sampler_transform_mode_t :: enum {
+texture_sampler_transform_mode_t :: enum i32 {
     TEX_SAMP_TRANS_KEEP,
     TEX_SAMP_TRANS_UPGRADE_TEXTURE_REMOVE_SAMPLER,
-    last,
 };
 
 /* EShMessages counterpart */
-messages_t :: enum u32 {
+messages_t :: enum i32 {
     MSG_DEFAULT_BIT = 0,
     MSG_RELAXED_ERRORS_BIT = (1 << 0),
     MSG_SUPPRESS_WARNINGS_BIT = (1 << 1),
@@ -315,11 +307,10 @@ messages_t :: enum u32 {
     MSG_HLSL_DX9_COMPATIBLE_BIT = (1 << 13),
     MSG_BUILTIN_SYMBOL_TABLE_BIT = (1 << 14),
     MSG_ENHANCED = (1 << 15),
-    last,
 };
 
 /* EShReflectionOptions counterpart */
-reflection_options_t :: enum {
+reflection_options_t :: enum i32 {
     REFLECTION_DEFAULT_BIT = 0,
     REFLECTION_STRICT_ARRAY_SUFFIX_BIT = (1 << 0),
     REFLECTION_BASIC_ARRAY_SUFFIX_BIT = (1 << 1),
@@ -330,35 +321,31 @@ reflection_options_t :: enum {
     REFLECTION_ALL_IO_VARIABLES_BIT = (1 << 6),
     REFLECTION_SHARED_STD140_SSBO_BIT = (1 << 7),
     REFLECTION_SHARED_STD140_UBO_BIT = (1 << 8),
-    last,
 };
 
 /* EProfile counterpart (from Versions.h) */
-profile_t :: enum {
+profile_t :: enum i32 {
     BAD_PROFILE = 0,
     NO_PROFILE = (1 << 0),
     CORE_PROFILE = (1 << 1),
     COMPATIBILITY_PROFILE = (1 << 2),
     ES_PROFILE = (1 << 3),
-    last,
 };
 
 /* Shader options */
-shader_options_t :: enum {
+shader_options_t :: enum i32 {
     SHADER_DEFAULT_BIT = 0,
     SHADER_AUTO_MAP_BINDINGS = (1 << 0),
     SHADER_AUTO_MAP_LOCATIONS = (1 << 1),
     SHADER_VULKAN_RULES_RELAXED = (1 << 2),
-    last,
 };
 
 /* TResourceType counterpart */
-resource_type_t :: enum {
+resource_type_t :: enum i32 {
     RESOURCE_TYPE_SAMPLER,
     RESOURCE_TYPE_TEXTURE,
     RESOURCE_TYPE_IMAGE,
     RESOURCE_TYPE_UBO,
     RESOURCE_TYPE_SSBO,
     RESOURCE_TYPE_UAV,
-    last,
 };

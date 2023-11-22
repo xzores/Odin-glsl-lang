@@ -4,6 +4,6 @@
 # Executables
 *.exe
 
-.vs
+*.vs
 */Tests.pdb
 glslang-main/*

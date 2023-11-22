@@ -11,6 +11,8 @@ SpirVBinary :: struct {
 
 compileShaderToSPIRV_Vulkan :: proc(stage : glslang.Stage, shaderSource : cstring, fileName : cstring) -> SpirVBinary {
     
+	fmt.printf("compileShaderToSPIRV_Vulkan\n");
+
 	input : glslang.input_t = {
         language = .SOURCE_GLSL,
         stage = stage,
@@ -29,20 +31,26 @@ compileShaderToSPIRV_Vulkan :: proc(stage : glslang.Stage, shaderSource : cstrin
 
     shader : glslang.Shader = glslang.shader_create(&input);
 
+	fmt.printf("Here 1\n");
+
     bin : SpirVBinary = {
         words = nil,
     };
 
-    if (!glslang.shader_preprocess(shader, &input))	{
-        fmt.printf("GLSL preprocessing failed %s\n", fileName);
+	fmt.printf("shaderSource : 0x%p : \n%s\n", cast(rawptr)shaderSource, shaderSource);
+
+    if (glslang.shader_preprocess(shader, &input) != 0)	{
+    	fmt.printf("GLSL preprocessing failed %s\n", fileName);
         fmt.printf("%s\n", glslang.shader_get_info_log(shader));
         fmt.printf("%s\n", glslang.shader_get_info_debug_log(shader));
         fmt.printf("%s\n", input.code);
         glslang.shader_delete(shader);
         return bin;
     }
+	
+	fmt.printf("Here 2\n");
 
-    if (!glslang.shader_parse(shader, &input)) {
+    if (glslang.shader_parse(shader, &input) != 0) {
         fmt.printf("GLSL parsing failed %s\n", fileName);
         fmt.printf("%s\n", glslang.shader_get_info_log(shader));
         fmt.printf("%s\n", glslang.shader_get_info_debug_log(shader));
@@ -51,10 +59,12 @@ compileShaderToSPIRV_Vulkan :: proc(stage : glslang.Stage, shaderSource : cstrin
         return bin;
     }
 
+	fmt.printf("Here 3\n");
+
     program : glslang.Program = glslang.program_create();
     glslang.program_add_shader(program, shader);
 
-    if (!glslang.program_link(program, .MSG_SPV_RULES_BIT | .MSG_VULKAN_RULES_BIT)) {
+    if (glslang.program_link(program, .MSG_SPV_RULES_BIT | .MSG_VULKAN_RULES_BIT) != 0) {
         fmt.printf("GLSL linking failed %s\n", fileName);
         fmt.printf("%s\n", glslang.program_get_info_log(program));
         fmt.printf("%s\n", glslang.program_get_info_debug_log(program));
@@ -62,6 +72,8 @@ compileShaderToSPIRV_Vulkan :: proc(stage : glslang.Stage, shaderSource : cstrin
         glslang.shader_delete(shader);
         return bin;
     }
+
+	fmt.printf("Here 4\n");
 
     glslang.program_SPIRV_generate(program, stage);
 
@@ -72,6 +84,8 @@ compileShaderToSPIRV_Vulkan :: proc(stage : glslang.Stage, shaderSource : cstrin
     if (spirv_messages != nil) {
     	fmt.printf("(%s) %s\b", fileName, spirv_messages);
 	}
+
+	fmt.printf("Here 5\n");
 
     glslang.program_delete(program);
     glslang.shader_delete(shader);
